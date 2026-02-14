@@ -3,9 +3,13 @@
 namespace App\Filament\Resources\Branches\Schemas;
 
 use Closure;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 
@@ -50,7 +54,51 @@ class BranchForm
 
                         Toggle::make('is_active')
                             ->default(true),
-                    ])->columns(2),
+                    ])->columns(1),
+                Section::make('Working Hours')
+                    ->description('Set the operational hours for this branch.')
+                    ->schema([
+                        Repeater::make('workingHours')
+                            ->relationship() // يعتمد على علاقة workingHours في الموديل
+                            ->schema([
+                                Select::make('day_of_week')
+                                    ->label('Day')
+                                    ->options([
+                                        0 => 'Sunday',
+                                        1 => 'Monday',
+                                        2 => 'Tuesday',
+                                        3 => 'Wednesday',
+                                        4 => 'Thursday',
+                                        5 => 'Friday',
+                                        6 => 'Saturday',
+                                    ])
+                                    ->required()
+                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems(), // يمنع اختيار نفس اليوم مرتين
+
+                                TimePicker::make('open_time')
+                                    ->label('Opening Time')
+                                    ->seconds(false) // لا نحتاج ثواني
+                                    ->required(fn (Get $get) => ! $get('is_closed')) // مطلوب فقط إذا لم يكن مغلقاً
+                                    ->disabled(fn (Get $get) => $get('is_closed')),
+
+                                TimePicker::make('close_time')
+                                    ->label('Closing Time')
+                                    ->seconds(false)
+                                    ->required(fn (Get $get) => ! $get('is_closed'))
+                                    ->disabled(fn (Get $get) => $get('is_closed')),
+
+                                Toggle::make('is_closed')
+                                    ->label('Closed Day')
+                                    ->live() // لتحديث حالة الحقول الأخرى فوراً عند التبديل
+                                    ->default(false),
+                            ])
+                            ->columns(4)
+                            ->defaultItems(7) // افتراضياً يعرض 7 حقول للأيام
+                            ->maxItems(7)    // أقصى عدد 7 أيام
+                            ->reorderable(false) // لا داعي لإعادة الترتيب
+                            ->addActionLabel('Add Day'),
+                    ])
+                    ->collapsible(),
             ]);
     }
 }
