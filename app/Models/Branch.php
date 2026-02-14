@@ -20,4 +20,9 @@ class Branch extends Model
     {
         return $this->hasMany(BranchWorkingHour::class);
     }
+
+    public function closures(): HasMany
+    {
+        return $this->hasMany(BranchClosure::class);
+    }
 }

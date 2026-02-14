@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Branches\Schemas;
 
+use App\Models\Branch;
 use Closure;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -98,7 +100,32 @@ class BranchForm
                             ->reorderable(false) // لا داعي لإعادة الترتيب
                             ->addActionLabel('Add Day'),
                     ])
-                    ->collapsible(),
+                    ->collapsible()
+                    ->columns(1),
+                Section::make('Exceptional Closures (Holidays)')
+                    ->description('Set specific dates when this branch will be completely closed.')
+                    ->schema([
+                        Repeater::make('closures')
+                            ->relationship() // يعتمد على علاقة closures في موديل Branch
+                            ->schema([
+                                DatePicker::make('closure_date')
+                                    ->label('Closure Date')
+                                    ->required()
+                                    ->native(false)
+                                    // يمكن إضافة validation لعدم اختيار تاريخ في الماضي لو أردت
+                                    ->minDate(now()),
+
+                                TextInput::make('reason')
+                                    ->label('Reason (Optional)')
+                                    ->maxLength(255)
+                                    ->placeholder('e.g. National Holiday, Renovation'),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(0) // لا نضيف عناصر افتراضية
+                            ->addActionLabel('Add Closure Date'),
+                    ])
+                    ->collapsible()
+                    ->columns(1),
             ]);
     }
 }
