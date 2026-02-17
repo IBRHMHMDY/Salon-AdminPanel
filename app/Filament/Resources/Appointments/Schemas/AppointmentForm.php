@@ -57,7 +57,7 @@ class AppointmentForm
                             ->live(), // Live لجلب المدة الزمنية
 
                         Select::make('employee_id')
-                            ->relationship('employee', 'name', fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'employee')))
+                            ->relationship('employee', 'name', fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->whereNotIn('name', ['Owner', 'Customer'])))
                             ->searchable()
                             ->preload()
                             ->label('Employee (Leave empty for Auto-Assign)'), // اختياري للتعيين التلقائي

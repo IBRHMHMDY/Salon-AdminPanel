@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Resources\Staffs\Tables;
 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UsersTable
+class StaffTable
 {
     public static function configure(Table $table): Table
     {

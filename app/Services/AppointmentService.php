@@ -33,7 +33,7 @@ class AppointmentService
     {
         $service = Service::with(['providers' => function ($query) {
             $query->where('salon_id', auth()->user()->salon_id)
-                ->whereHas('roles', fn ($q) => $q->where('name', 'employee'));
+                ->whereHas('roles', fn ($q) => $q->where('name', 'staff'));
         }])->findOrFail($serviceId);
 
         foreach ($service->providers as $employee) {

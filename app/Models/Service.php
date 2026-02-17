@@ -17,6 +17,6 @@ class Service extends Model
 
     public function providers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'service_user');
+        return $this->belongsToMany(Staff::class, 'service_user', 'service_id', 'user_id');
     }
 }

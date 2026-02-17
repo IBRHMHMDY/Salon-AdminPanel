@@ -35,17 +35,19 @@ class ServiceForm
 
                         // ربط الموظفين بالخدمة (The Skill Matrix)
                         Select::make('providers')
-                            ->relationship('providers', 'name', function (Builder $query) {
-                                return $query
-                                    // 1. عزل البيانات: الموظفون التابعون لنفس صالون المستخدم الحالي فقط
-                                    ->where('salon_id', auth()->user()->salon_id)
+                            ->relationship('providers', // 1. اسم العلاقة في موديل Service
+                                'name',      // 2. الحقل الذي سيظهر (اسم الموظف)
+                                function (Builder $query) {
+                                    // 1. عزل البيانات: الموظفون التابعون لنفس الصالون
+                                    $query->where('salon_id', auth()->user()->salon_id);
 
-                                    // 2. الفلترة حسب الدور: إظهار من يحمل دور Staff حصراً
-                                    ->whereHas('roles', function ($q) {
-                                        $q->where('name', 'employee');
+                                    // 2. ⚡️ الفلترة الديناميكية: إحضار الجميع (بما فيهم الأدوار الجديدة) ما عدا المالك والعميل
+                                    $query->whereHas('roles', function ($q) {
+                                        $q->whereNotIn('name', ['Owner', 'Customer']);
                                     });
 
-                            })
+                                    return $query;
+                                })
                             ->multiple()
                             ->preload()
                             ->searchable()

@@ -17,7 +17,7 @@ class DefaultSalonSeeder extends Seeder
     {
         // 1. Create Default Salon
         $salon = Salon::create([
-            'name' => 'Ahgzly Default Salon',
+            'name' => 'Default Salon',
             'is_active' => true,
         ]);
 
@@ -30,13 +30,13 @@ class DefaultSalonSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // 3. Create Admin User (Owner)
+        // 3. Create Super Admin User (Owner)
         $owner = User::create([
             'salon_id' => $salon->id,
             'branch_id' => $branch->id,
-            'name' => 'Ibrahim Admin',
-            'email' => 'admin@ahgzly.com',
-            'password' => Hash::make('password'),
+            'name' => 'Ibrahim Hamdy',
+            'email' => 'ibrahim@gmail.com',
+            'password' => Hash::make('ibrahim@0000'),
             'phone' => '01000000000',
         ]);
 

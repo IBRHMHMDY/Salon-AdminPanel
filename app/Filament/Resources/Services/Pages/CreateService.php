@@ -9,6 +9,11 @@ class CreateService extends CreateRecord
 {
     protected static string $resource = ServiceResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // ربط الخدمة بصالون المستخدم الحالي تلقائياً

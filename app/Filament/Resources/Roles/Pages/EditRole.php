@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Branches\Pages;
+namespace App\Filament\Resources\Roles\Pages;
 
-use App\Filament\Resources\Branches\BranchResource;
+use App\Filament\Resources\Roles\RoleResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditBranch extends EditRecord
+class EditRole extends EditRecord
 {
-    protected static string $resource = BranchResource::class;
+    protected static string $resource = RoleResource::class;
 
     protected function getRedirectUrl(): string
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Users\Schemas;
+namespace App\Filament\Resources\Staffs\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
-class UserForm
+class StaffForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Employee Information')
+                Section::make('Staff Information')
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -38,13 +38,15 @@ class UserForm
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create'),
 
-                        // ✅ القيد: إخفاء دور Owner
+                        // ✅ القيد: إخفاء دور Owner, Customer
                         Select::make('roles')
                             ->relationship(
-                                'roles',
+                                'roles', // تمرير مباشر
                                 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->whereNotIn('name', ['Owner', 'Customer'])
+                                // ⚡️ تم تصحيح اسم المالك إلى Owner Salon ليتطابق مع الـ Seeder
+                                fn (Builder $query) => $query->whereNotIn('name', ['Owner', 'Customer'])
                             )
+                            ->multiple() // ⚡️ إضافة هامة جداً (لأن الموظف يمكن أن يكون له أكثر من دور)
                             ->live()
                             ->preload()
                             ->searchable()
@@ -53,20 +55,20 @@ class UserForm
                         // بما أن الـ Owner فقط هو من يملك الفرع الرئيسي، ونحن هنا ننشئ موظفين، نمنع اختيار الفرع الرئيسي.
                         Select::make('branch_id')
                             ->relationship(
-                                'branch',
-                                'name',
-                                modifyQueryUsing: function (Builder $query, Get $get) {
+                                'branch', // ⚡️ تمرير مباشر لاسم العلاقة
+                                'name',   // ⚡️ تمرير مباشر للحقل المرئي (هذا يمنع ظهور الـ ID نهائياً)
+                                function (Builder $query, Get $get) {
                                     $query->where('salon_id', Auth::user()->salon_id);
 
-                                    // ⚡️ الحل هنا: إجبار القيمة لتكون مصفوفة دائماً لتجنب خطأ in_array
                                     $selectedRoles = (array) $get('roles');
-
-                                    $managerRoleId = Role::where('name', 'Manager')->value('id');
+                                    $managerRoleId = Role::where('name', 'Branch Manager')->value('id');
 
                                     // التحقق بأمان
                                     if (in_array($managerRoleId, $selectedRoles)) {
                                         $query->where('is_main', false);
                                     }
+
+                                    return $query; // ⚡️ ضروري جداً إرجاع الاستعلام لكي لا ينكسر الحقل
                                 }
                             )
                             ->searchable()
@@ -74,15 +76,14 @@ class UserForm
                             ->required()
                             ->label('Assigned Branch')
                             ->helperText(function (Get $get) {
-                                // ⚡️ وتطبيق نفس الحل هنا أيضاً
                                 $selectedRoles = (array) $get('roles');
-                                $managerRoleId = Role::where('name', 'Manager')->value('id');
+                                $managerRoleId = Role::where('name', 'Branch Manager')->value('id');
 
                                 if (in_array($managerRoleId, $selectedRoles)) {
                                     return 'Main Branch is hidden because it is managed directly by the Owner.';
                                 }
 
-                                return 'Select a branch for this employee. Main branch is allowed.';
+                                return 'Select a branch for this staff. Main branch is allowed.';
                             }),
 
                     ])->columns(2),

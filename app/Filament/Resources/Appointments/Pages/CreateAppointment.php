@@ -14,6 +14,11 @@ class CreateAppointment extends CreateRecord
 {
     protected static string $resource = AppointmentResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $service = Service::findOrFail($data['service_id']);
@@ -69,10 +74,5 @@ class CreateAppointment extends CreateRecord
         }
 
         return $data;
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
     }
 }

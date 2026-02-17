@@ -40,21 +40,7 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasRole(['Owner', 'Manager', 'Employee']);
-    }
-
-    // Check User
-    protected static function booted(): void
-    {
-        static::creating(function ($user) {
-            if (Auth::check() && Auth::hasUser() && Auth::user()->salon_id && ! $user->salon_id) {
-                $user->salon_id = Auth::user()->salon_id;
-            }
-            static::created(function ($user) {
-                // إذا كنت تستخدم Spatie Permissions
-                $user->assignRole('customer');
-            });
-        });
+        return $this->roles()->count() > 0 && ! $this->hasRole('Customer');
     }
 
     // Appear Current UserName and YourRole
@@ -66,6 +52,19 @@ class User extends Authenticatable implements FilamentUser, HasName
         // إرجاع الاسم وبجانبه الدور بين قوسين
         return "{$this->name} ({$roleName})";
     }
+    // // Check User
+    // protected static function booted(): void
+    // {
+    //     static::creating(function ($user) {
+    //         if (Auth::check() && Auth::hasUser() && Auth::user()->salon_id && ! $user->salon_id) {
+    //             $user->salon_id = Auth::user()->salon_id;
+    //         }
+    //         // static::created(function ($user) {
+    //         //     // إذا كنت تستخدم Spatie Permissions
+    //         //     $user->assignRole('Customer');
+    //         // });
+    //     });
+    // }
 
     // Relationships
     public function salon()
