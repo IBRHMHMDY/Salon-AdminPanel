@@ -9,6 +9,14 @@ class Branch extends Model
 {
     use \App\Models\Traits\BelongsToSalon;
 
+    protected $fillable = [
+        'salon_id', // 🚀 أضف هذا
+        'name',
+        'phone',
+        'address',
+        'is_active',
+    ];
+
     protected $guarded = [];
 
     public function salon()

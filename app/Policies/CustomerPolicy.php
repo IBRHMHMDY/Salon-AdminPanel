@@ -9,12 +9,12 @@ class CustomerPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view_customers');
+        return $user->hasPermissionTo('view_any_customer');
     }
 
     public function view(User $user, Customer $customer): bool
     {
-        return $user->hasPermissionTo('view_customers');
+        return $user->hasPermissionTo('view_customer');
     }
 
     public function create(User $user): bool

@@ -47,4 +47,27 @@ class AppointmentResource extends Resource
             'edit' => EditAppointment::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        // 1. إذا كان مالك الصالون، نعرض له كل شيء
+        if ($user->can('view_all_appointment')) {
+            return $query;
+        }
+
+        // 2. إذا كان موظفاً (Staff)، نعرض له مواعيده فقط
+        if ($user->can('view_own_appointment')) {
+            return $query->where('employee_id', $user->id);
+        }
+
+        // 3. (مستقبلاً) إذا كان مدير فرع، نعرض له مواعيد فرعه فقط
+        if ($user->can('view_own_branch')) {
+            return $query->where('branch_id', $user->branch_id);
+        }
+
+        return $query;
+    }
 }

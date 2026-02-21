@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
             $table->foreignId('salon_id')->constrained()->cascadeOnDelete();
-            $table->string('name'); // e.g., Main Branch
-            $table->string('address')->nullable();
+            $table->string('name');
             $table->string('phone')->nullable();
+            $table->string('address')->nullable();
             $table->boolean('is_main')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -36,7 +36,7 @@ class AppointmentForm
                                 titleAttribute: 'name', // العمود الذي سيظهر للمستخدم (الاسم وليس الرقم)
                                 modifyQueryUsing: fn (Builder $query) => $query
                                     ->whereHas('roles', fn ($q) => $q
-                                        ->where('name', 'customer')))
+                                        ->where('name', 'Customer')))
                             ->searchable()
                             ->preload()
                             ->createOptionForm([

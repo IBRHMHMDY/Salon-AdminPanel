@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('logo')->nullable();
-            $table->string('domain')->nullable(); // للمستقبل
-            $table->boolean('is_active')->default(true);
+            $table->string('email')->nullable()->unique();
+            $table->string('tax_number')->nullable();
+            $table->string('timezone')->nullable()->default('Africa/Cairo');
             $table->timestamps();
         });
     }

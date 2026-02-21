@@ -4,42 +4,48 @@ namespace Database\Seeders;
 
 use App\Models\Branch;
 use App\Models\Salon;
-use App\Models\User;
+use App\Models\User; // استخدم موديل User الأساسي للمالك
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class DefaultSalonSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Create Default Salon
-        $salon = Salon::create([
-            'name' => 'Default Salon',
-            'is_active' => true,
-        ]);
+        // Create Default Salon
+        $salon = Salon::firstOrCreate(
+            ['email' => 'default@ahgzly.com'],
+            [
+                'name' => 'Default Salon',
+            ]
+        );
+        // Create Main Branch
+        $mainBranch = Branch::firstOrCreate(
+            ['name' => 'Default Main Branch'],
+            [
+                'address' => 'Egypt Cairo',
+                'phone' => '01111111111',
+                'salon_id' => $salon->id,
+                'is_main' => true,
+                'is_active' => true,
 
-        // 2. Create Main Branch
-        $branch = Branch::create([
-            'salon_id' => $salon->id,
-            'name' => 'Main Branch',
-            'address' => 'Cairo, Egypt',
-            'is_main' => true,
-            'is_active' => true,
-        ]);
+            ]
+        );
+        // 2. إنشاء حساب المالك (Owner)
+        $ownerUser = User::firstOrCreate(
+            ['email' => 'ibrahim@gmail.com'], // حسابك لدخول لوحة التحكم
+            [
+                'name' => 'Ibrahim',
+                'phone' => '01111111111',
+                'password' => Hash::make('ibrahim@0000'),
+                'salon_id' => $salon->id,
+                'branch_id' => $mainBranch->id,
+            ]
+        );
 
-        // 3. Create Super Admin User (Owner)
-        $owner = User::create([
-            'salon_id' => $salon->id,
-            'branch_id' => $branch->id,
-            'name' => 'Ibrahim Hamdy',
-            'email' => 'ibrahim@gmail.com',
-            'password' => Hash::make('ibrahim@0000'),
-            'phone' => '01000000000',
-        ]);
-
-        $owner->assignRole('Owner');
+        // 3. إعطاء المالك دور "Owner"
+        if (! $ownerUser->hasRole('Owner')) {
+            $ownerUser->assignRole('Owner');
+        }
     }
 }

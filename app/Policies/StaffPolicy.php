@@ -9,12 +9,12 @@ class StaffPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view_staffs');
+        return $user->hasPermissionTo('view_any_staff');
     }
 
     public function view(User $user, Staff $staff): bool
     {
-        return $user->hasPermissionTo('view_staffs');
+        return $user->hasPermissionTo('view_staff');
     }
 
     public function create(User $user): bool
@@ -29,7 +29,6 @@ class StaffPolicy
 
     public function delete(User $user, Staff $staff): bool
     {
-        // يمنع حذف حساب المالك لحماية النظام
         if ($staff->hasRole('Owner')) {
             return false;
         }
