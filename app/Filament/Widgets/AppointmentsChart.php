@@ -15,7 +15,7 @@ class AppointmentsChart extends ChartWidget
     protected int|string|array $columnSpan = 'full';
 
     // 🚀 1. تحديد الفلتر الافتراضي عند فتح الصفحة
-    public ?string $filter = 'week';
+    public ?string $filter = 'day';
 
     // 🚀 2. إنشاء قائمة الفلاتر الزمنية
     protected function getFilters(): ?array
@@ -103,7 +103,7 @@ class AppointmentsChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
     }
 
     public static function canView(): bool
